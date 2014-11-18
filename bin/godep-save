@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+source $(dirname $(which $0))/build-common
+
+setup_godep_work
+
+cd $PACKAGE
+
+godep save
+
+cd -
+
+if [ -e Godeps ]; then
+    rm -rf Godeps
+fi
+
+cp -rf $PACKAGE/Godeps .

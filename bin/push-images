@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+source $(dirname $(which $0))/build-common
+
+goto_root
+
+cd dist
+
+for i in $(<images); do
+    docker push $i
+done

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+goto_root()
+{
+    while [ ! -e .git ]; do
+        if [ ! -w . ]; then
+            echo "Failed to find .git directory"
+            exit -1
+        fi
+        cd ..
+    done
+
+    echo Root: $(pwd)
+}
+
+setup_godep_work()
+{
+    goto_root
+
+    if [ ! -e .package ]; then
+        echo 'Need .package file to exist'
+        exit 1
+    fi
+
+    GOPATH=$(pwd)-godep-work
+    mkdir -p $GOPATH
+
+    PACKAGE=$GOPATH/src/$(<.package)
+    PARENT=$(dirname $PACKAGE)
+
+    if [ -e $PACKAGE ]; then
+        rm -rf "$PACKAGE"
+    fi
+
+    mkdir -p $PARENT
+    cp -rf . $PACKAGE
+
+    export GOPATH
+    echo Use GOPATH
+    echo "    export" GOPATH=$GOPATH
+}
