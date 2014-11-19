@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+source $(dirname $(which $0))/build-common
+
+goto_root
+
+for i in clean bootstrap build test package; do
+    if [ -e scripts/$i ]; then
+        wrap $i
+    fi
+done
