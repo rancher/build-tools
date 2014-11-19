@@ -39,6 +39,15 @@ setup_dockerfile
 
 DOCKER_ARGS="-it"
 
+case $(uname -s) in
+    'Darwin')
+        READLINK_CMD=greadlink
+        ;;
+    *)
+        READLINK_CMD=readlink
+        ;;
+esac
+
 while [[ "$1" =~ -.* && "$1" != "--" ]]; do
     DOCKER_ARGS="${DOCKER_ARGS} $1"
     shift 1
@@ -47,7 +56,7 @@ done
 if [ "$1" = "--" ]; then
     shift 1
 elif [ -f "$1" ] && [ -x "$1" ]; then
-    ARG=$(readlink -f $1)
+    ARG=$($READLINK_CMD -f $1)
     shift 1
 else
     ARG=/source/scripts/$1
