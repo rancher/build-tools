@@ -5,11 +5,13 @@ trap do_chown exit
 
 source $(dirname $(which $0))/build-common
 
+DOCKER_IMAGE="rancher/docker-dind-base:latest"
+
 setup_dockerfile()
 {
     if [ ! -e Dockerfile ]; then
-        cat > Dockerfile << "EOF"
-FROM rancher/docker-dind-base:latest
+        cat > Dockerfile << EOF
+FROM $DOCKER_IMAGE
 COPY ./scripts/bootstrap /scripts/bootstrap
 RUN /scripts/bootstrap
 WORKDIR /source
@@ -19,7 +21,7 @@ EOF
 
 do_chown()
 {
-    docker run --rm -v $(pwd):/source debian chown -R "$(id -u):$(id -g)" /source
+    docker run --rm -v $(pwd):/source ${DOCKER_IMAGE} chown -R "$(id -u):$(id -g)" /source
 }
 
 run_in_docker()
@@ -45,9 +47,6 @@ while [[ "$1" =~ -.* && "$1" != "--" ]]; do
 done
 
 if [ "$1" = "--" ]; then
-    shift 1
-elif [ -f "$1" ] && [ -x "$1" ]; then
-    ARG=$(readlink -f $1)
     shift 1
 else
     ARG=/source/scripts/$1
