@@ -5,8 +5,12 @@ source $(dirname $(which $0))/build-common
 
 goto_root
 
-for i in clean bootstrap build test package; do
-    if [ -e scripts/$i ]; then
-        wrap $i
-    fi
-done
+if [ -x scripts/release ]; then
+    wrap release
+else
+    for i in clean bootstrap build test package; do
+        if [ -e scripts/$i ]; then
+            wrap $i
+        fi
+    done
+fi
