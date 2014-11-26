@@ -29,11 +29,11 @@ run_in_docker()
     LABEL=$(git rev-parse --abbrev-ref HEAD)
     IMAGE="build-$(basename $(pwd)):$LABEL"
 
-    if [ -e .privileged ]; then
-        PRIVILEGED="--privileged"
+    if [ -e .wrap-docker-args ]; then
+        EXTRA_DOCKER_ARGS="$(<.wrap-docker-args)"
     fi
     docker build -t $IMAGE .
-    docker run ${DOCKER_ARGS} ${PRIVILEGED} --rm -v $(pwd):/source $IMAGE "$@"
+    docker run ${DOCKER_ARGS} ${EXTRA_DOCKER_ARGS} --rm -v $(pwd):/source $IMAGE "$@"
 }
 
 goto_root
