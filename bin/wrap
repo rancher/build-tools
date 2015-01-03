@@ -39,7 +39,9 @@ run_in_docker()
 goto_root
 setup_dockerfile
 
-DOCKER_ARGS="-it"
+if [ -t 1 ]; then
+    DOCKER_ARGS="-it"
+fi
 
 while [[ "$1" =~ -.* && "$1" != "--" ]]; do
     DOCKER_ARGS="${DOCKER_ARGS} $1"
