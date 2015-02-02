@@ -40,7 +40,7 @@ goto_root
 setup_dockerfile
 
 if [ -t 1 ]; then
-    DOCKER_ARGS="-it"
+    DOCKER_ARGS="${DOCKER_ARGS} -it"
 fi
 
 while [[ "$1" =~ -.* && "$1" != "--" ]]; do
