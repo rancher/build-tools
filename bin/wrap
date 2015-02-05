@@ -21,7 +21,9 @@ EOF
 
 do_chown()
 {
-    docker run --rm -v $(pwd):/source ${DOCKER_IMAGE} chown -R "$(id -u):$(id -g)" /source
+    if [ "$DO_CHOWN" != "false" ]; then
+        docker run --rm -v $(pwd):/source ${DOCKER_IMAGE} chown -R "$(id -u):$(id -g)" /source
+    fi
 }
 
 run_in_docker()
@@ -36,11 +38,17 @@ run_in_docker()
     docker run ${DOCKER_ARGS} ${EXTRA_DOCKER_ARGS} --rm -v $(pwd):/source $IMAGE "$@"
 }
 
+DO_CHOWN=false
+
 goto_root
 setup_dockerfile
 
 if [ -t 1 ]; then
     DOCKER_ARGS="${DOCKER_ARGS} -it"
+fi
+
+if [[ ! -e .no-chown && -f scripts/bootstrap ]]; then
+    DO_CHOWN=true
 fi
 
 while [[ "$1" =~ -.* && "$1" != "--" ]]; do
