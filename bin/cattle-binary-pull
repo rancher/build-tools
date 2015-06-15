@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+
+CATTLE_GLOBAL_PROPERTY=${1:-"./resources/content/cattle-global.properties"}
+DEST=${2:-"/usr/bin"}
+
+install_binary()
+{
+    local src=${1}
+    local dest=${2}
+
+    pushd /tmp
+    #deletes the longest possible match from the left
+    file=$(echo ${src##*/})
+
+    curl -sSL -o ${file} ${1}
+    suffix=$(echo ${file##*.})
+    binary=$(echo ${file}|cut -d'.' -f1)
+
+    if [ "${suffix}" = "xz" ]; then
+        tar -xpJf ${file} -C ${dest}
+    fi
+
+    if [ "${suffix}" == "${binary}" ]; then
+        cp ${binary} ${dest}
+    fi
+
+    chmod +x ${dest}/${binary}
+    rm -f ${file}
+    popd
+}
+
+
+if [ -f ${CATTLE_GLOBAL_PROPERTY} ]; then
+    for i in $(grep service\.package\.*\.url ${CATTLE_GLOBAL_PROPERTY}|cut -d"=" -f2); do
+        install_binary $i ${DEST}
+    done
+fi
