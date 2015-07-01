@@ -32,7 +32,7 @@ run_in_docker()
     IMAGE="build-$(basename $(pwd)):$LABEL"
 
     if [ -e .wrap-docker-args ]; then
-        EXTRA_DOCKER_ARGS="$(<.wrap-docker-args)"
+        EXTRA_DOCKER_ARGS=$(eval echo $(<.wrap-docker-args))
     fi
     docker build -t $IMAGE .
     docker run ${DOCKER_ARGS} ${EXTRA_DOCKER_ARGS} --rm -v $(pwd):/source $IMAGE "$@"
