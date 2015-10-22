@@ -27,15 +27,21 @@ install_binary()
     pushd /tmp
 
     file=$(get_file ${src})
-    suffix=$(echo ${file##*.})
+    suffix=$(echo ${file#*.})
     binary=$(echo ${file}|cut -d'.' -f1)
 
     case "${suffix}" in
-        "xz")
+        "tar.xz")
             tar -xpJf ${file} -C ${dest}
             ;;
-        "gz")
+        "tar.gz")
             tar -xzvf ${file} -C ${dest}
+            ;;
+        "xz")
+            xz -c -d ${file} > ${dest}/${binary}
+            ;;
+        "gz")
+            gzip -dcf ${file} > ${dest}/${binary}
             ;;
         "tar")
             tar -xvf ${file} -C ${dest}
