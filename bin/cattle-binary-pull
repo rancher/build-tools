@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 CATTLE_GLOBAL_PROPERTY=${1:-"./resources/content/cattle-global.properties"}
 DEST=${2:-"/usr/bin"}
