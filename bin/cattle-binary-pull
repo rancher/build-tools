@@ -74,7 +74,12 @@ if [ -f "${CATTLE_GLOBAL_PROPERTY}" ]; then
         cmd=copy_agent
     fi
 
-    for i in $(grep ${PACKAGES}\.package\.*\.url "${CATTLE_GLOBAL_PROPERTY}"|cut -d"=" -f2); do
+    for l in $(grep ${PACKAGES}\.package\.*\.url "${CATTLE_GLOBAL_PROPERTY}"); do
+        i=$(echo ${l} | cut -d"=" -f2 | sed 's/^[\t]*//' | sed 's/[\t]*$//')
+        var_name=$(echo ${l} | cut -d"=" -f1 | sed 's/^[\t]*//' | sed 's/[\t]*$//' | tr '.' '_' | tr '[a-z]' '[A-Z]' | sed 's/^/DEFAULT_CATTLE_/')
+        if [ "$(printenv "${var_name}")" != "" ]; then
+            i=$(printenv "${var_name}" | cut -d"=" -f2 | sed 's/^[\t]*//' | sed 's/[\t]*$//')
+        fi
         $cmd $(echo "${i}"|cut -d',' -f1) "${DEST}" $(echo "${i}"|cut -d',' -s -f2)
     done
 fi
